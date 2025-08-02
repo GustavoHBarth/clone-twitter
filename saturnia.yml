@@ -1,0 +1,40 @@
+yml 
+# saturnia.yml
+# Arquivo de orquestração declarativa para a plataforma Saturnia
+
+version: "1.0"
+
+# Configuração global
+deployment:
+  project: saturnia-demo
+  environment: production
+  defaultNetwork: saturnia-net
+  autoExpose: true     # Se true, o primeiro serviço com porta exposta será publicado automaticamente
+  entryService: web    # Define explicitamente qual é o ponto de entrada HTTP
+  domains:
+    - domain: exampleapp.saturniatecnologia.com.br
+      service: web
+      proxy: true            # se true, irá criar automaticamente no nginx npm
+      ssl: true              # ativa ou não SSL via Nginx NPM
+      forceHttps: true
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    env:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - api
+    expose: true
+
+volumes:
+  logs: {}
+  db-data: {}
+
+networks:
+  saturnia-net:
+    driver: bridge
